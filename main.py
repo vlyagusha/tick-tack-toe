@@ -21,13 +21,7 @@ class App:
     def init_buttons(self, window):
         for i in range(self.grid.N):
             for j in range(self.grid.N):
-                if self.grid.field[i, j] == 1:
-                    text = "X"
-                elif self.grid.field[i, j] == -1:
-                    text = "O"
-                else:
-                    text = " "
-                btn = tk.Button(window, text=text, font=("Arial Bold", 50), height=2, width=5)
+                btn = tk.Button(window, text=" ", font=("Arial Bold", 50), height=2, width=5)
                 btn.tag = repr(i) + repr(j)
                 btn.grid(row=i, column=j)
                 btn.bind("<ButtonPress-1>", self.on_click)
@@ -48,7 +42,7 @@ class App:
         self.grid.mark(i, j)
         self.player_done = True
 
-    def on_release(self, event):
+    def on_release(self):
         if not self.player_done:
             return
         self.check_grid()
@@ -64,11 +58,17 @@ class App:
 
     def ai_turn(self):
         (i, j) = ai.AI.mark_cell(self.ai, self.grid)
+        if i is None and j is None:
+            self.nobody_wins()
         self.button_ids[i * self.grid.N + j].config(text="O")
         self.grid.mark(i, j, -1)
 
     def player_wins(self):
         messagebox.showinfo("You win!", "You win!")
+        self.main_window.destroy()
+
+    def nobody_wins(self):
+        messagebox.showinfo("Nobody wins!", "Nobody wins!")
         self.main_window.destroy()
 
     def player_loose(self):
